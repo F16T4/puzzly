@@ -14,9 +14,11 @@
       --bg-card-soft: #1a2134;
       --border-soft: rgba(255, 255, 255, 0.08);
       --border-accent: rgba(168, 85, 247, 0.45);
+      --border-cyan: rgba(56, 189, 248, 0.45);
       --text-main: #f3f4f6;
       --text-muted: #9ca3af;
       --accent-purple: #a855f7;
+      --accent-cyan: #38bdf8;
       --accent-green: #22c55e;
       --accent-amber: #f59e0b;
       --accent-red: #ef4444;
@@ -34,7 +36,7 @@
       font-family: "Cairo", system-ui, -apple-system, sans-serif;
       background:
         radial-gradient(circle at 15% 10%, rgba(168, 85, 247, 0.14), transparent 40%),
-        radial-gradient(circle at 85% 90%, rgba(34, 197, 94, 0.09), transparent 42%),
+        radial-gradient(circle at 85% 90%, rgba(56, 189, 248, 0.09), transparent 42%),
         var(--bg-main);
       color: var(--text-main);
       padding: 16px;
@@ -44,7 +46,7 @@
 
     .app-container {
       width: 100%;
-      max-width: 820px;
+      max-width: 860px;
       display: flex;
       flex-direction: column;
       gap: 16px;
@@ -74,7 +76,7 @@
       width: 42px;
       height: 42px;
       border-radius: 12px;
-      background: linear-gradient(135deg, rgba(168, 85, 247, 0.25), rgba(34, 197, 94, 0.18));
+      background: linear-gradient(135deg, rgba(168, 85, 247, 0.25), rgba(56, 189, 248, 0.18));
       border: 1px solid var(--border-accent);
       display: grid;
       place-items: center;
@@ -143,32 +145,6 @@
       color: #f3e8ff;
     }
 
-    /* Current Puzzle Board (Latest Message Only) */
-    .puzzle-board {
-      background: var(--bg-card);
-      border: 1px solid var(--border-accent);
-      border-radius: 20px;
-      padding: 18px;
-      box-shadow: 0 14px 36px rgba(0, 0, 0, 0.4);
-    }
-
-    .board-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 14px;
-      gap: 10px;
-    }
-
-    .board-label {
-      font-size: 0.95rem;
-      font-weight: 800;
-      color: #e9d5ff;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
     .sync-tag {
       font-size: 0.75rem;
       padding: 4px 10px;
@@ -179,39 +155,103 @@
       font-weight: 700;
     }
 
+    /* Two Separate Puzzle Boards */
+    .boards-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .puzzle-board {
+      background: var(--bg-card);
+      border: 1px solid var(--border-soft);
+      border-radius: 20px;
+      padding: 16px;
+      box-shadow: 0 14px 36px rgba(0, 0, 0, 0.38);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .puzzle-board.board-p1 {
+      border-color: var(--border-accent);
+    }
+
+    .puzzle-board.board-p2 {
+      border-color: var(--border-cyan);
+    }
+
+    .puzzle-board.target-selected {
+      box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.35), 0 14px 36px rgba(0, 0, 0, 0.42);
+    }
+
+    .board-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .board-label {
+      font-size: 0.92rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .board-p1 .board-label {
+      color: #e9d5ff;
+    }
+
+    .board-p2 .board-label {
+      color: #bae6fd;
+    }
+
+    .board-mini-stat {
+      font-size: 0.74rem;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-muted);
+      font-weight: 700;
+    }
+
     .puzzle-words {
       min-height: 112px;
+      flex: 1;
       background: rgba(11, 14, 23, 0.72);
       border: 1px dashed rgba(255, 255, 255, 0.14);
       border-radius: 16px;
-      padding: 14px;
+      padding: 12px;
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: center;
-      gap: 14px;
+      gap: 10px;
     }
 
     .word-group {
       display: flex;
       align-items: center;
-      gap: 6px;
-      padding: 8px 10px;
-      border-radius: 14px;
+      gap: 5px;
+      padding: 6px 8px;
+      border-radius: 12px;
       background: rgba(255, 255, 255, 0.03);
       border: 1px solid rgba(255, 255, 255, 0.07);
     }
 
     .puzzle-tile {
-      width: 66px;
-      height: 66px;
-      border-radius: 12px;
+      width: 56px;
+      height: 56px;
+      border-radius: 11px;
       background: #1e263b;
       border: 1px solid rgba(255, 255, 255, 0.12);
       overflow: hidden;
       display: grid;
       place-items: center;
-      position: relative;
       box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
     }
 
@@ -224,9 +264,59 @@
 
     .empty-board {
       color: var(--text-muted);
-      font-size: 0.92rem;
+      font-size: 0.84rem;
       text-align: center;
-      padding: 18px 8px;
+      padding: 14px 6px;
+      line-height: 1.5;
+    }
+
+    /* Target Board Selector Strip */
+    .target-selector {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      background: rgba(11, 14, 23, 0.55);
+      border: 1px solid var(--border-soft);
+      border-radius: 14px;
+      padding: 8px 12px;
+    }
+
+    .target-caption {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .target-pills {
+      display: flex;
+      gap: 8px;
+    }
+
+    .target-btn {
+      border: 1px solid var(--border-soft);
+      background: var(--bg-card-soft);
+      color: var(--text-main);
+      border-radius: 10px;
+      padding: 6px 12px;
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .target-btn.active-p1 {
+      background: rgba(168, 85, 247, 0.24);
+      border-color: var(--accent-purple);
+      color: #f3e8ff;
+    }
+
+    .target-btn.active-p2 {
+      background: rgba(56, 189, 248, 0.22);
+      border-color: var(--accent-cyan);
+      color: #e0f2fe;
     }
 
     /* Composer / Answer Builder */
@@ -265,7 +355,6 @@
       border: 1px solid rgba(168, 85, 247, 0.45);
       background: #1e263b;
       cursor: pointer;
-      position: relative;
     }
 
     .draft-item img {
@@ -470,14 +559,20 @@
       margin-top: 4px;
     }
 
+    @media (max-width: 720px) {
+      .boards-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
     @media (max-width: 520px) {
       .choices-grid {
         grid-template-columns: repeat(4, 1fr);
         gap: 8px;
       }
       .puzzle-tile {
-        width: 54px;
-        height: 54px;
+        width: 50px;
+        height: 50px;
       }
       .draft-item {
         width: 44px;
@@ -500,22 +595,43 @@
       <div class="stats-bar">
         <div class="stat-pill">المستوى <span class="val" id="levelVal">1</span></div>
         <div class="stat-pill">النقاط <span class="val" id="scoreVal">0</span></div>
+        <div class="sync-tag" id="syncStatus">متصل</div>
         <button class="icon-btn" id="hintToggleBtn" type="button">💡 تلميح</button>
         <button class="icon-btn" id="roomModalBtn" type="button">🔑 رمز اللعب</button>
       </div>
     </header>
 
-    <section class="puzzle-board">
-      <div class="board-top">
-        <div class="board-label">🎯 اللغز الحالي</div>
-        <div class="sync-tag" id="syncStatus">متصل</div>
+    <section class="boards-grid">
+      <div class="puzzle-board board-p1 target-selected" id="boardCard1">
+        <div class="board-top">
+          <div class="board-label">🟣 لوحة اللاعب 1</div>
+          <div class="board-mini-stat" id="movesStat1">الجولة 1</div>
+        </div>
+        <div class="puzzle-words" id="puzzleDisplay1">
+          <div class="empty-board">لا يوجد لغز نشط هنا بعد.</div>
+        </div>
       </div>
-      <div class="puzzle-words" id="puzzleDisplay">
-        <div class="empty-board">اختر حيوانات من الأسفل ثم اضغط «تحقق من الإجابة» لبدء اللغز.</div>
+
+      <div class="puzzle-board board-p2" id="boardCard2">
+        <div class="board-top">
+          <div class="board-label">🔵 لوحة اللاعب 2</div>
+          <div class="board-mini-stat" id="movesStat2">الجولة 1</div>
+        </div>
+        <div class="puzzle-words" id="puzzleDisplay2">
+          <div class="empty-board">لا يوجد لغز نشط هنا بعد.</div>
+        </div>
       </div>
     </section>
 
     <section class="composer-box">
+      <div class="target-selector">
+        <span class="target-caption">إرسال التسلسل إلى:</span>
+        <div class="target-pills">
+          <button class="target-btn active-p1" id="targetBtn1" type="button">🟣 لوحة اللاعب 1</button>
+          <button class="target-btn" id="targetBtn2" type="button">🔵 لوحة اللاعب 2</button>
+        </div>
+      </div>
+
       <div class="draft-tray" id="draftTray">
         <span class="draft-placeholder">اضغط على صور الحيوانات بالأسفل لتكوين التسلسل...</span>
       </div>
@@ -538,7 +654,7 @@
   <div class="modal-backdrop" id="roomModal">
     <div class="modal-card">
       <h2>🔑 رمز الغرفة المشتركة</h2>
-      <p>أدخل نفس الرمز السري على الجهازين لمزامنة اللغز الحالي تلقائياً.</p>
+      <p>أدخل نفس الرمز السري على الجهازين لمزامنة اللوحتين تلقائياً.</p>
       <input type="text" id="roomInput" placeholder="مثال: m-s-2026" maxlength="40" />
       <div class="modal-actions">
         <button class="btn-action btn-back" id="closeModalBtn" type="button">إلغاء</button>
@@ -569,7 +685,6 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // 28 visually distinct animals mapped strictly to first letter of their Arabic name
     const ANIMALS = [
       { id: "alif", letter: "أ", name: "أرنب", emoji: "🐇", color1: "#f8fafc", color2: "#cbd5e1" },
       { id: "baa", letter: "ب", name: "بطة", emoji: "🦆", color1: "#fef08a", color2: "#eab308" },
@@ -622,10 +737,20 @@
 
     const STORAGE_ROOM_KEY = "animal_puzzle_room_code";
     let roomCode = localStorage.getItem(STORAGE_ROOM_KEY) || "nox-soso-room";
-    let draftTokens = []; // array of animalId or "SPACE"
+    let targetBoard = "board_1"; // "board_1" or "board_2"
+    let draftTokens = [];
     let unsubscribeRoom = null;
+    let boardState1 = null;
+    let boardState2 = null;
 
-    const puzzleDisplay = document.getElementById("puzzleDisplay");
+    const puzzleDisplay1 = document.getElementById("puzzleDisplay1");
+    const puzzleDisplay2 = document.getElementById("puzzleDisplay2");
+    const movesStat1 = document.getElementById("movesStat1");
+    const movesStat2 = document.getElementById("movesStat2");
+    const boardCard1 = document.getElementById("boardCard1");
+    const boardCard2 = document.getElementById("boardCard2");
+    const targetBtn1 = document.getElementById("targetBtn1");
+    const targetBtn2 = document.getElementById("targetBtn2");
     const draftTray = document.getElementById("draftTray");
     const choicesGrid = document.getElementById("choicesGrid");
     const levelVal = document.getElementById("levelVal");
@@ -641,6 +766,23 @@
     function sanitizeRoomKey(raw) {
       const cleaned = (raw || "").trim().replace(/[.#$/\[\]]/g, "_");
       return cleaned || "nox-soso-room";
+    }
+
+    function setTargetBoard(nextTarget) {
+      targetBoard = nextTarget === "board_2" ? "board_2" : "board_1";
+      const isP1 = targetBoard === "board_1";
+      targetBtn1.classList.toggle("active-p1", isP1);
+      targetBtn2.classList.toggle("active-p2", !isP1);
+      boardCard1.classList.toggle("target-selected", isP1);
+      boardCard2.classList.toggle("target-selected", !isP1);
+    }
+
+    function updateOverallStats() {
+      const m1 = boardState1 && Array.isArray(boardState1.tokens) && boardState1.tokens.length ? Number(boardState1.moves || 1) : 0;
+      const m2 = boardState2 && Array.isArray(boardState2.tokens) && boardState2.tokens.length ? Number(boardState2.moves || 1) : 0;
+      const totalMoves = m1 + m2;
+      levelVal.textContent = String(Math.max(1, totalMoves || 1));
+      scoreVal.textContent = String(totalMoves * 10);
     }
 
     function renderChoices() {
@@ -701,20 +843,16 @@
       });
     }
 
-    function renderCurrentPuzzle(data) {
+    function renderSingleBoard(data, targetEl, statEl) {
       if (!data || !Array.isArray(data.tokens) || data.tokens.length === 0) {
-        levelVal.textContent = "1";
-        scoreVal.textContent = "0";
-        puzzleDisplay.innerHTML =
-          '<div class="empty-board">لا يوجد لغز نشط بعد — كوّن سلسلة حيوانات بالأسفل واضغط «تحقق من الإجابة».</div>';
+        statEl.textContent = "الجولة 1";
+        targetEl.innerHTML = '<div class="empty-board">لا يوجد لغز نشط هنا بعد.</div>';
         return;
       }
 
       const movesCount = Number(data.moves || 1);
-      levelVal.textContent = String(movesCount);
-      scoreVal.textContent = String(movesCount * 10);
+      statEl.textContent = `الجولة ${movesCount}`;
 
-      // Group animal tokens into word blocks separated by "SPACE"
       const words = [];
       let currentWord = [];
       data.tokens.forEach((tok) => {
@@ -732,12 +870,11 @@
       }
 
       if (words.length === 0) {
-        puzzleDisplay.innerHTML =
-          '<div class="empty-board">لا يوجد لغز نشط بعد — كوّن سلسلة حيوانات بالأسفل واضغط «تحقق من الإجابة».</div>';
+        targetEl.innerHTML = '<div class="empty-board">لا يوجد لغز نشط هنا بعد.</div>';
         return;
       }
 
-      puzzleDisplay.innerHTML = "";
+      targetEl.innerHTML = "";
       words.forEach((wordTokens) => {
         const group = document.createElement("div");
         group.className = "word-group";
@@ -747,7 +884,7 @@
           tile.innerHTML = `<img src="${ANIMAL_MAP[id].imgSrc}" alt="" />`;
           group.appendChild(tile);
         });
-        puzzleDisplay.appendChild(group);
+        targetEl.appendChild(group);
       });
     }
 
@@ -759,21 +896,32 @@
       roomCode = cleanRoom;
       localStorage.setItem(STORAGE_ROOM_KEY, cleanRoom);
 
-      const puzzleRef = ref(db, `puzzles/${cleanRoom}/latest`);
+      const roomRef = ref(db, `puzzles/${cleanRoom}`);
       syncStatus.textContent = "جاري المزامنة...";
 
       unsubscribeRoom = onValue(
-        puzzleRef,
+        roomRef,
         (snapshot) => {
           syncStatus.textContent = "متصل";
-          const val = snapshot.val();
-          renderCurrentPuzzle(val);
+          const val = snapshot.val() || {};
+          // Backward compatibility with single latest node if present
+          boardState1 = val.board_1 || val.latest || null;
+          boardState2 = val.board_2 || null;
+
+          renderSingleBoard(boardState1, puzzleDisplay1, movesStat1);
+          renderSingleBoard(boardState2, puzzleDisplay2, movesStat2);
+          updateOverallStats();
         },
         () => {
           syncStatus.textContent = "تحقق من Rules";
         }
       );
     }
+
+    targetBtn1.addEventListener("click", () => setTargetBoard("board_1"));
+    targetBtn2.addEventListener("click", () => setTargetBoard("board_2"));
+    boardCard1.addEventListener("click", () => setTargetBoard("board_1"));
+    boardCard2.addEventListener("click", () => setTargetBoard("board_2"));
 
     document.getElementById("spaceBtn").addEventListener("click", () => {
       if (draftTokens.length === 0 || draftTokens[draftTokens.length - 1] === "SPACE") return;
@@ -798,12 +946,16 @@
       });
       if (filtered.length === 0) return;
 
-      const nextMoves = Number(levelVal.textContent || "1") + (puzzleDisplay.querySelector(".empty-board") ? 0 : 1);
-      const puzzleRef = ref(db, `puzzles/${roomCode}/latest`);
+      const currentBoardData = targetBoard === "board_2" ? boardState2 : boardState1;
+      const hasExisting = currentBoardData && Array.isArray(currentBoardData.tokens) && currentBoardData.tokens.length > 0;
+      const prevMoves = hasExisting ? Number(currentBoardData.moves || 1) : 0;
+      const nextMoves = Math.max(1, prevMoves + 1);
+
+      const boardRef = ref(db, `puzzles/${roomCode}/${targetBoard}`);
       try {
-        await set(puzzleRef, {
+        await set(boardRef, {
           tokens: filtered,
-          moves: Math.max(1, nextMoves),
+          moves: nextMoves,
           updatedAt: Date.now()
         });
         draftTokens = [];
@@ -839,6 +991,7 @@
       }
     });
 
+    setTargetBoard("board_1");
     renderChoices();
     renderDraft();
     subscribeToRoom(roomCode);
