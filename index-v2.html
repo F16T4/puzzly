@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>تحدي الحيوانات - لعبة الألغاز</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-main: #0b0e17;
+      --bg-card: #131826;
+      --bg-card-soft: #1a2134;
+      --border-soft: rgba(255, 255, 255, 0.08);
+      --border-accent: rgba(168, 85, 247, 0.45);
+      --border-cyan: rgba(56, 189, 248, 0.45);
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --accent-purple: #a855f7;
+      --accent-cyan: #38bdf8;
+      --accent-green: #22c55e;
+      --accent-amber: #f59e0b;
+      --accent-red: #ef4444;
+    }
+
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Cairo", system-ui, -apple-system, sans-serif;
+      background:
+        radial-gradient(circle at 15% 10%, rgba(168, 85, 247, 0.14), transparent 40%),
+        radial-gradient(circle at 85% 90%, rgba(56, 189, 248, 0.09), transparent 42%),
+        var(--bg-main);
+      color: var(--text-main);
+      padding: 16px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 860px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Top Puzzle Game Header */
+    .game-header {
+      background: var(--bg-card);
+      border: 1px solid var(--border-soft);
+      border-radius: 18px;
+      padding: 14px 18px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+    }
+
+    .brand-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-badge {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(168, 85, 247, 0.25), rgba(56, 189, 248, 0.18));
+      border: 1px solid var(--border-accent);
+      display: grid;
+      place-items: center;
+      font-size: 22px;
+    }
+
+    .brand-title h1 {
+      margin: 0;
+      font-size: 1.15rem;
+      font-weight: 800;
+    }
+
+    .brand-title p {
+      margin: 2px 0 0;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .stats-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .stat-pill {
+      background: var(--bg-card-soft);
+      border: 1px solid var(--border-soft);
+      border-radius: 12px;
+      padding: 6px 12px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .stat-pill span.val {
+      color: #d8b4fe;
+    }
+
+    .icon-btn {
+      background: var(--bg-card-soft);
+      border: 1px solid var(--border-soft);
+      color: var(--text-main);
+      border-radius: 12px;
+      padding: 8px 12px;
+      font-family: inherit;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.18s ease;
+    }
+
+    .icon-btn:hover {
+      border-color: var(--border-accent);
+      transform: translateY(-1px);
+    }
+
+    .icon-btn.active {
+      background: rgba(168, 85, 247, 0.2);
+      border-color: var(--accent-purple);
+      color: #f3e8ff;
+    }
+
+    .sync-tag {
+      font-size: 0.75rem;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(34, 197, 94, 0.14);
+      border: 1px solid rgba(34, 197, 94, 0.35);
+      color: #86efac;
+      font-weight: 700;
+    }
+
+    /* Two Separate Puzzle Boards */
+    .boards-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .puzzle-board {
+      background: var(--bg-card);
+      border: 1px solid var(--border-soft);
+      border-radius: 20px;
+      padding: 16px;
+      box-shadow: 0 14px 36px rgba(0, 0, 0, 0.38);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .puzzle-board.board-p1 {
+      border-color: var(--border-accent);
+    }
+
+    .puzzle-board.board-p2 {
+      border-color: var(--border-cyan);
+    }
+
+    .puzzle-board.target-selected {
+      box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.35), 0 14px 36px rgba(0, 0, 0, 0.42);
+    }
+
+    .board-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .board-label {
+      font-size: 0.92rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .board-p1 .board-label {
+      color: #e9d5ff;
+    }
+
+    .board-p2 .board-label {
+      color: #bae6fd;
+    }
+
+    .board-mini-stat {
+      font-size: 0.74rem;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-muted);
+      font-weight: 700;
+    }
+
+    .puzzle-words {
+      min-height: 112px;
+      flex: 1;
+      background: rgba(11, 14, 23, 0.72);
+      border: 1px dashed rgba(255, 255, 255, 0.14);
+      border-radius: 16px;
+      padding: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .word-group {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 8px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .puzzle-tile {
+      width: 56px;
+      height: 56px;
+      border-radius: 11px;
+      background: #1e263b;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
+    }
+
+    .puzzle-tile img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .empty-board {
+      color: var(--text-muted);
+      font-size: 0.84rem;
+      text-align: center;
+      padding: 14px 6px;
+      line-height: 1.5;
+    }
+
+    /* Target Board Selector Strip */
+    .target-selector {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      background: rgba(11, 14, 23, 0.55);
+      border: 1px solid var(--border-soft);
+      border-radius: 14px;
+      padding: 8px 12px;
+    }
+
+    .target-caption {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .target-pills {
+      display: flex;
+      gap: 8px;
+    }
+
+    .target-btn {
+      border: 1px solid var(--border-soft);
+      background: var(--bg-card-soft);
+      color: var(--text-main);
+      border-radius: 10px;
+      padding: 6px 12px;
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .target-btn.active-p1 {
+      background: rgba(168, 85, 247, 0.24);
+      border-color: var(--accent-purple);
+      color: #f3e8ff;
+    }
+
+    .target-btn.active-p2 {
+      background: rgba(56, 189, 248, 0.22);
+      border-color: var(--accent-cyan);
+      color: #e0f2fe;
+    }
+
+    /* Composer / Answer Builder */
+    .composer-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-soft);
+      border-radius: 20px;
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .draft-tray {
+      min-height: 76px;
+      background: rgba(11, 14, 23, 0.75);
+      border: 1px solid var(--border-soft);
+      border-radius: 15px;
+      padding: 10px 12px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .draft-placeholder {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    .draft-item {
+      width: 50px;
+      height: 50px;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid rgba(168, 85, 247, 0.45);
+      background: #1e263b;
+      cursor: pointer;
+    }
+
+    .draft-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .draft-space {
+      padding: 6px 10px;
+      border-radius: 9px;
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px dashed rgba(245, 158, 11, 0.55);
+      color: #fcd34d;
+      font-size: 0.75rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .action-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: space-between;
+    }
+
+    .action-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .btn-action {
+      border: none;
+      border-radius: 12px;
+      padding: 10px 15px;
+      font-family: inherit;
+      font-size: 0.86rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 0.14s ease, opacity 0.14s ease;
+    }
+
+    .btn-action:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn-space {
+      background: rgba(245, 158, 11, 0.18);
+      color: #fde68a;
+      border: 1px solid rgba(245, 158, 11, 0.4);
+    }
+
+    .btn-back {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-main);
+      border: 1px solid var(--border-soft);
+    }
+
+    .btn-clear {
+      background: rgba(239, 68, 68, 0.15);
+      color: #fca5a5;
+      border: 1px solid rgba(239, 68, 68, 0.35);
+    }
+
+    .btn-submit {
+      background: linear-gradient(135deg, #9333ea, #7e22ce);
+      color: #ffffff;
+      padding: 10px 20px;
+      box-shadow: 0 8px 20px rgba(147, 51, 234, 0.35);
+    }
+
+    /* 28 Distinct Animal Choices Grid */
+    .choices-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-soft);
+      border-radius: 20px;
+      padding: 16px;
+    }
+
+    .choices-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+      gap: 10px;
+    }
+
+    .animal-card {
+      background: var(--bg-card-soft);
+      border: 1px solid var(--border-soft);
+      border-radius: 14px;
+      padding: 6px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.16s ease;
+    }
+
+    .animal-card:hover {
+      border-color: var(--accent-purple);
+      transform: translateY(-2px);
+      background: #222b44;
+    }
+
+    .animal-card:active {
+      transform: scale(0.96);
+    }
+
+    .animal-thumb {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #0f1422;
+    }
+
+    .animal-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .hint-badge {
+      display: none;
+      width: 100%;
+      text-align: center;
+      font-size: 0.76rem;
+      font-weight: 800;
+      color: #e9d5ff;
+      background: rgba(168, 85, 247, 0.2);
+      border-radius: 7px;
+      padding: 1px 4px;
+      line-height: 1.3;
+    }
+
+    body.show-hints .hint-badge {
+      display: block;
+    }
+
+    /* Room Code Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.72);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 50;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-card {
+      width: 100%;
+      max-width: 390px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-accent);
+      border-radius: 20px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .modal-card h2 {
+      margin: 0;
+      font-size: 1.05rem;
+    }
+
+    .modal-card p {
+      margin: 0;
+      font-size: 0.84rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .modal-card input {
+      width: 100%;
+      background: var(--bg-main);
+      border: 1px solid var(--border-soft);
+      border-radius: 12px;
+      padding: 10px 12px;
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    .modal-card input:focus {
+      border-color: var(--accent-purple);
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    @media (max-width: 720px) {
+      .boards-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .choices-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+      }
+      .puzzle-tile {
+        width: 50px;
+        height: 50px;
+      }
+      .draft-item {
+        width: 44px;
+        height: 44px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <header class="game-header">
+      <div class="brand-title">
+        <div class="brand-badge">🧩</div>
+        <div>
+          <h1>تحدي الحيوانات</h1>
+          <p>مطابقة الرموز البصرية والتركيز</p>
+        </div>
+      </div>
+
+      <div class="stats-bar">
+        <div class="stat-pill">المستوى <span class="val" id="levelVal">1</span></div>
+        <div class="stat-pill">النقاط <span class="val" id="scoreVal">0</span></div>
+        <div class="sync-tag" id="syncStatus">متصل</div>
+        <button class="icon-btn" id="hintToggleBtn" type="button">💡 تلميح</button>
+        <button class="icon-btn" id="roomModalBtn" type="button">🔑 رمز اللعب</button>
+      </div>
+    </header>
+
+    <section class="boards-grid">
+      <div class="puzzle-board board-p1 target-selected" id="boardCard1">
+        <div class="board-top">
+          <div class="board-label">🟣 لوحة اللاعب 1</div>
+          <div class="board-mini-stat" id="movesStat1">الجولة 1</div>
+        </div>
+        <div class="puzzle-words" id="puzzleDisplay1">
+          <div class="empty-board">لا يوجد لغز نشط هنا بعد.</div>
+        </div>
+      </div>
+
+      <div class="puzzle-board board-p2" id="boardCard2">
+        <div class="board-top">
+          <div class="board-label">🔵 لوحة اللاعب 2</div>
+          <div class="board-mini-stat" id="movesStat2">الجولة 1</div>
+        </div>
+        <div class="puzzle-words" id="puzzleDisplay2">
+          <div class="empty-board">لا يوجد لغز نشط هنا بعد.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="composer-box">
+      <div class="target-selector">
+        <span class="target-caption">إرسال التسلسل إلى:</span>
+        <div class="target-pills">
+          <button class="target-btn active-p1" id="targetBtn1" type="button">🟣 لوحة اللاعب 1</button>
+          <button class="target-btn" id="targetBtn2" type="button">🔵 لوحة اللاعب 2</button>
+        </div>
+      </div>
+
+      <div class="draft-tray" id="draftTray">
+        <span class="draft-placeholder">اضغط على صور الحيوانات بالأسفل لتكوين التسلسل...</span>
+      </div>
+
+      <div class="action-row">
+        <div class="action-group">
+          <button class="btn-action btn-space" id="spaceBtn" type="button">↔️ فاصل كلمة</button>
+          <button class="btn-action btn-back" id="backspaceBtn" type="button">⌫ تراجع</button>
+          <button class="btn-action btn-clear" id="clearBtn" type="button">🗑️ مسح</button>
+        </div>
+        <button class="btn-action btn-submit" id="submitBtn" type="button">✓ تحقق من الإجابة</button>
+      </div>
+    </section>
+
+    <section class="choices-box">
+      <div class="choices-grid" id="choicesGrid"></div>
+    </section>
+  </div>
+
+  <div class="modal-backdrop" id="roomModal">
+    <div class="modal-card">
+      <h2>🔑 رمز الغرفة المشتركة</h2>
+      <p>أدخل نفس الرمز السري على الجهازين لمزامنة اللوحتين تلقائياً.</p>
+      <input type="text" id="roomInput" placeholder="مثال: m-s-2026" maxlength="40" />
+      <div class="modal-actions">
+        <button class="btn-action btn-back" id="closeModalBtn" type="button">إلغاء</button>
+        <button class="btn-action btn-submit" id="saveRoomBtn" type="button">حفظ الرمز</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+      getDatabase,
+      ref,
+      set,
+      onValue
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyA__nT7KwS1cZ9iazdcwGEzOl8-9p-U0X8",
+      authDomain: "animal-puzzle-f12b3.firebaseapp.com",
+      databaseURL: "https://animal-puzzle-f12b3-default-rtdb.firebaseio.com",
+      projectId: "animal-puzzle-f12b3",
+      storageBucket: "animal-puzzle-f12b3.firebasestorage.app",
+      messagingSenderId: "18625111650",
+      appId: "1:18625111650:web:3cece07326856a6742d33b"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const ANIMALS = [
+      { id: "alif", letter: "أ", name: "أرنب", emoji: "🐇", color1: "#f8fafc", color2: "#cbd5e1" },
+      { id: "baa", letter: "ب", name: "بطة", emoji: "🦆", color1: "#fef08a", color2: "#eab308" },
+      { id: "taa", letter: "ت", name: "تمساح", emoji: "🐊", color1: "#86efac", color2: "#16a34a" },
+      { id: "thaa", letter: "ث", name: "ثعبان", emoji: "🐍", color1: "#fde047", color2: "#ca8a04" },
+      { id: "jeem", letter: "ج", name: "جمل", emoji: "🐪", color1: "#fed7aa", color2: "#c2410c" },
+      { id: "haa", letter: "ح", name: "حوت", emoji: "🐋", color1: "#93c5fd", color2: "#1d4ed8" },
+      { id: "khaa", letter: "خ", name: "خروف", emoji: "🐑", color1: "#e2e8f0", color2: "#64748b" },
+      { id: "dal", letter: "د", name: "دب", emoji: "🐻", color1: "#d6b38c", color2: "#78350f" },
+      { id: "dhal", letter: "ذ", name: "ذبابة", emoji: "🪰", color1: "#cbd5e1", color2: "#334155" },
+      { id: "raa", letter: "ر", name: "روبيان", emoji: "🦐", color1: "#fda4af", color2: "#e11d48" },
+      { id: "zay", letter: "ز", name: "زرافة", emoji: "🦒", color1: "#fde68a", color2: "#d97706" },
+      { id: "seen", letter: "س", name: "سلحفاة", emoji: "🐢", color1: "#6ee7b7", color2: "#059669" },
+      { id: "sheen", letter: "ش", name: "شمبانزي", emoji: "🦧", color1: "#fdba74", color2: "#9a3412" },
+      { id: "sad", letter: "ص", name: "صقر", emoji: "🦅", color1: "#e7e5e4", color2: "#57534e" },
+      { id: "dad", letter: "ض", name: "ضفدع", emoji: "🐸", color1: "#a3e635", color2: "#4d7c0f" },
+      { id: "taa_emph", letter: "ط", name: "طاووس", emoji: "🦚", color1: "#67e8f9", color2: "#0e7490" },
+      { id: "dhaa_emph", letter: "ظ", name: "ظربان", emoji: "🦨", color1: "#e5e7eb", color2: "#111827" },
+      { id: "ayn", letter: "ع", name: "عنكبوت", emoji: "🕷️", color1: "#d1d5db", color2: "#1f2937" },
+      { id: "ghayn", letter: "غ", name: "غزال", emoji: "🦌", color1: "#fcd34d", color2: "#92400e" },
+      { id: "faa", letter: "ف", name: "فيل", emoji: "🐘", color1: "#cbd5e1", color2: "#475569" },
+      { id: "qaf", letter: "ق", name: "قطة", emoji: "🐈", color1: "#ffedd5", color2: "#ea580c" },
+      { id: "kaf", letter: "ك", name: "كلب", emoji: "🐕", color1: "#fef3c7", color2: "#b45309" },
+      { id: "lam", letter: "ل", name: "لاما", emoji: "🦙", color1: "#faf5ff", color2: "#7e22ce" },
+      { id: "meem", letter: "م", name: "ماعز", emoji: "🐐", color1: "#f3f4f6", color2: "#4b5563" },
+      { id: "noon", letter: "ن", name: "نمر", emoji: "🐅", color1: "#fdba74", color2: "#ea580c" },
+      { id: "haa_letter", letter: "هـ", name: "هدهد", emoji: "🐦", color1: "#fed7aa", color2: "#b45309" },
+      { id: "waw", letter: "و", name: "وطواط", emoji: "🦇", color1: "#c4b5fd", color2: "#3b0764" },
+      { id: "yaa", letter: "ي", name: "يمامة", emoji: "🕊️", color1: "#ffffff", color2: "#94a3b8" }
+    ];
+
+    function makeAnimalSvgDataUrl(animal) {
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 160 160">
+        <defs>
+          <radialGradient id="g" cx="50%" cy="40%" r="60%">
+            <stop offset="0%" stop-color="${animal.color1}" stop-opacity="0.35"/>
+            <stop offset="100%" stop-color="${animal.color2}" stop-opacity="0.14"/>
+          </radialGradient>
+        </defs>
+        <rect width="160" height="160" rx="28" fill="#131a2c"/>
+        <rect width="160" height="160" rx="28" fill="url(#g)"/>
+        <text x="80" y="98" font-size="76" text-anchor="middle" dominant-baseline="middle">${animal.emoji}</text>
+      </svg>`;
+      return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+    }
+
+    const ANIMAL_MAP = Object.fromEntries(
+      ANIMALS.map((a) => [a.id, { ...a, imgSrc: makeAnimalSvgDataUrl(a) }])
+    );
+
+    const STORAGE_ROOM_KEY = "animal_puzzle_room_code";
+    let roomCode = localStorage.getItem(STORAGE_ROOM_KEY) || "nox-soso-room";
+    let targetBoard = "board_1"; // "board_1" or "board_2"
+    let draftTokens = [];
+    let unsubscribeRoom = null;
+    let boardState1 = null;
+    let boardState2 = null;
+
+    const puzzleDisplay1 = document.getElementById("puzzleDisplay1");
+    const puzzleDisplay2 = document.getElementById("puzzleDisplay2");
+    const movesStat1 = document.getElementById("movesStat1");
+    const movesStat2 = document.getElementById("movesStat2");
+    const boardCard1 = document.getElementById("boardCard1");
+    const boardCard2 = document.getElementById("boardCard2");
+    const targetBtn1 = document.getElementById("targetBtn1");
+    const targetBtn2 = document.getElementById("targetBtn2");
+    const draftTray = document.getElementById("draftTray");
+    const choicesGrid = document.getElementById("choicesGrid");
+    const levelVal = document.getElementById("levelVal");
+    const scoreVal = document.getElementById("scoreVal");
+    const syncStatus = document.getElementById("syncStatus");
+    const hintToggleBtn = document.getElementById("hintToggleBtn");
+    const roomModal = document.getElementById("roomModal");
+    const roomInput = document.getElementById("roomInput");
+    const roomModalBtn = document.getElementById("roomModalBtn");
+    const closeModalBtn = document.getElementById("closeModalBtn");
+    const saveRoomBtn = document.getElementById("saveRoomBtn");
+
+    function sanitizeRoomKey(raw) {
+      const cleaned = (raw || "").trim().replace(/[.#$/\[\]]/g, "_");
+      return cleaned || "nox-soso-room";
+    }
+
+    function setTargetBoard(nextTarget) {
+      targetBoard = nextTarget === "board_2" ? "board_2" : "board_1";
+      const isP1 = targetBoard === "board_1";
+      targetBtn1.classList.toggle("active-p1", isP1);
+      targetBtn2.classList.toggle("active-p2", !isP1);
+      boardCard1.classList.toggle("target-selected", isP1);
+      boardCard2.classList.toggle("target-selected", !isP1);
+    }
+
+    function updateOverallStats() {
+      const m1 = boardState1 && Array.isArray(boardState1.tokens) && boardState1.tokens.length ? Number(boardState1.moves || 1) : 0;
+      const m2 = boardState2 && Array.isArray(boardState2.tokens) && boardState2.tokens.length ? Number(boardState2.moves || 1) : 0;
+      const totalMoves = m1 + m2;
+      levelVal.textContent = String(Math.max(1, totalMoves || 1));
+      scoreVal.textContent = String(totalMoves * 10);
+    }
+
+    function renderChoices() {
+      choicesGrid.innerHTML = "";
+      ANIMALS.forEach((animal) => {
+        const full = ANIMAL_MAP[animal.id];
+        const card = document.createElement("button");
+        card.type = "button";
+        card.className = "animal-card";
+        card.innerHTML = `
+          <div class="animal-thumb">
+            <img src="${full.imgSrc}" alt="" loading="lazy" />
+          </div>
+          <div class="hint-badge">${animal.letter} · ${animal.name}</div>
+        `;
+        card.addEventListener("click", () => {
+          draftTokens.push(animal.id);
+          renderDraft();
+        });
+        choicesGrid.appendChild(card);
+      });
+    }
+
+    function renderDraft() {
+      draftTray.innerHTML = "";
+      if (draftTokens.length === 0) {
+        const span = document.createElement("span");
+        span.className = "draft-placeholder";
+        span.textContent = "اضغط على صور الحيوانات بالأسفل لتكوين التسلسل...";
+        draftTray.appendChild(span);
+        return;
+      }
+
+      draftTokens.forEach((token, idx) => {
+        if (token === "SPACE") {
+          const sp = document.createElement("button");
+          sp.type = "button";
+          sp.className = "draft-space";
+          sp.textContent = "فاصل";
+          sp.addEventListener("click", () => {
+            draftTokens.splice(idx, 1);
+            renderDraft();
+          });
+          draftTray.appendChild(sp);
+        } else {
+          const item = ANIMAL_MAP[token];
+          if (!item) return;
+          const el = document.createElement("button");
+          el.type = "button";
+          el.className = "draft-item";
+          el.innerHTML = `<img src="${item.imgSrc}" alt="" />`;
+          el.addEventListener("click", () => {
+            draftTokens.splice(idx, 1);
+            renderDraft();
+          });
+          draftTray.appendChild(el);
+        }
+      });
+    }
+
+    function renderSingleBoard(data, targetEl, statEl) {
+      if (!data || !Array.isArray(data.tokens) || data.tokens.length === 0) {
+        statEl.textContent = "الجولة 1";
+        targetEl.innerHTML = '<div class="empty-board">لا يوجد لغز نشط هنا بعد.</div>';
+        return;
+      }
+
+      const movesCount = Number(data.moves || 1);
+      statEl.textContent = `الجولة ${movesCount}`;
+
+      const words = [];
+      let currentWord = [];
+      data.tokens.forEach((tok) => {
+        if (tok === "SPACE") {
+          if (currentWord.length > 0) {
+            words.push(currentWord);
+            currentWord = [];
+          }
+        } else if (ANIMAL_MAP[tok]) {
+          currentWord.push(tok);
+        }
+      });
+      if (currentWord.length > 0) {
+        words.push(currentWord);
+      }
+
+      if (words.length === 0) {
+        targetEl.innerHTML = '<div class="empty-board">لا يوجد لغز نشط هنا بعد.</div>';
+        return;
+      }
+
+      targetEl.innerHTML = "";
+      words.forEach((wordTokens) => {
+        const group = document.createElement("div");
+        group.className = "word-group";
+        wordTokens.forEach((id) => {
+          const tile = document.createElement("div");
+          tile.className = "puzzle-tile";
+          tile.innerHTML = `<img src="${ANIMAL_MAP[id].imgSrc}" alt="" />`;
+          group.appendChild(tile);
+        });
+        targetEl.appendChild(group);
+      });
+    }
+
+    function subscribeToRoom(targetRoom) {
+      if (typeof unsubscribeRoom === "function") {
+        unsubscribeRoom();
+      }
+      const cleanRoom = sanitizeRoomKey(targetRoom);
+      roomCode = cleanRoom;
+      localStorage.setItem(STORAGE_ROOM_KEY, cleanRoom);
+
+      const roomRef = ref(db, `puzzles/${cleanRoom}`);
+      syncStatus.textContent = "جاري المزامنة...";
+
+      unsubscribeRoom = onValue(
+        roomRef,
+        (snapshot) => {
+          syncStatus.textContent = "متصل";
+          const val = snapshot.val() || {};
+          // Backward compatibility with single latest node if present
+          boardState1 = val.board_1 || val.latest || null;
+          boardState2 = val.board_2 || null;
+
+          renderSingleBoard(boardState1, puzzleDisplay1, movesStat1);
+          renderSingleBoard(boardState2, puzzleDisplay2, movesStat2);
+          updateOverallStats();
+        },
+        () => {
+          syncStatus.textContent = "تحقق من Rules";
+        }
+      );
+    }
+
+    targetBtn1.addEventListener("click", () => setTargetBoard("board_1"));
+    targetBtn2.addEventListener("click", () => setTargetBoard("board_2"));
+    boardCard1.addEventListener("click", () => setTargetBoard("board_1"));
+    boardCard2.addEventListener("click", () => setTargetBoard("board_2"));
+
+    document.getElementById("spaceBtn").addEventListener("click", () => {
+      if (draftTokens.length === 0 || draftTokens[draftTokens.length - 1] === "SPACE") return;
+      draftTokens.push("SPACE");
+      renderDraft();
+    });
+
+    document.getElementById("backspaceBtn").addEventListener("click", () => {
+      draftTokens.pop();
+      renderDraft();
+    });
+
+    document.getElementById("clearBtn").addEventListener("click", () => {
+      draftTokens = [];
+      renderDraft();
+    });
+
+    document.getElementById("submitBtn").addEventListener("click", async () => {
+      const filtered = draftTokens.filter((t, idx, arr) => {
+        if (t !== "SPACE") return true;
+        return idx > 0 && idx < arr.length - 1 && arr[idx - 1] !== "SPACE";
+      });
+      if (filtered.length === 0) return;
+
+      const currentBoardData = targetBoard === "board_2" ? boardState2 : boardState1;
+      const hasExisting = currentBoardData && Array.isArray(currentBoardData.tokens) && currentBoardData.tokens.length > 0;
+      const prevMoves = hasExisting ? Number(currentBoardData.moves || 1) : 0;
+      const nextMoves = Math.max(1, prevMoves + 1);
+
+      const boardRef = ref(db, `puzzles/${roomCode}/${targetBoard}`);
+      try {
+        await set(boardRef, {
+          tokens: filtered,
+          moves: nextMoves,
+          updatedAt: Date.now()
+        });
+        draftTokens = [];
+        renderDraft();
+      } catch (e) {
+        syncStatus.textContent = "خطأ في الإرسال";
+      }
+    });
+
+    hintToggleBtn.addEventListener("click", () => {
+      const enabled = document.body.classList.toggle("show-hints");
+      hintToggleBtn.classList.toggle("active", enabled);
+    });
+
+    roomModalBtn.addEventListener("click", () => {
+      roomInput.value = roomCode;
+      roomModal.classList.add("open");
+    });
+
+    closeModalBtn.addEventListener("click", () => {
+      roomModal.classList.remove("open");
+    });
+
+    saveRoomBtn.addEventListener("click", () => {
+      const nextRoom = sanitizeRoomKey(roomInput.value);
+      roomModal.classList.remove("open");
+      subscribeToRoom(nextRoom);
+    });
+
+    roomModal.addEventListener("click", (e) => {
+      if (e.target === roomModal) {
+        roomModal.classList.remove("open");
+      }
+    });
+
+    setTargetBoard("board_1");
+    renderChoices();
+    renderDraft();
+    subscribeToRoom(roomCode);
+  </script>
+</body>
+</html>
